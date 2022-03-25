@@ -1,0 +1,61 @@
+--- 
+- 
+  become: true
+  hosts: centos
+  name: "Install LAMP Server"
+  tasks: 
+    - 
+      name: "Install Apache, My sql and PHP"
+      yum: 
+        name: 
+          - firewalld
+          - httpd
+          - mysql-server
+          - mysql-devel
+          - php
+          - php-mysqlnd
+        state: latest
+    - 
+      name: "start and enable filewalld"
+      service: 
+        enabled: true
+        name: firewalld
+        state: started
+    - 
+      firewalld: 
+        immediate: true
+        permanent: true
+        service: http
+        state: enabled
+      name: "allow http service via firewalld"
+    - 
+      firewalld: 
+        immediate: true
+        permanent: true
+        service: ssh
+        state: enabled
+      name: "allow ssh service via firewalld"
+    - 
+      name: "start and enable httpd"
+      service: 
+        enabled: true
+        name: httpd
+        state: started
+    - 
+      name: "start and enable mysql"
+      service: 
+        enabled: true
+        name: mysqld
+        state: started
+    - 
+      name: "copy index file"
+      copy: 
+        dest: /var/www/html
+        src: ~/index.html
+      name: "copying file with playbook"
+    - 
+      name: "Check that you can connect (GET) to a page and it returns a status 200"
+      uri: 
+        url: "http://192.168.10.138/index.html"
+  user: root
+
